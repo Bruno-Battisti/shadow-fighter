@@ -139,10 +139,19 @@ class Player {
     if (this.grounded && moveX !== 0) this.animTime += dt;
   }
 
-  // Pequeno balanço vertical (1px) para dar a sensação de passos ao andar.
+  get isWalking() {
+    return this.grounded && this.vx !== 0;
+  }
+
+  // Alterna entre os dois quadros de caminhada (pernas/braço) a cada 120ms.
+  get walkFrame() {
+    return Math.floor(this.animTime / 0.12) % 2;
+  }
+
+  // Pequeno balanço vertical (1px) para reforçar a sensação de passos.
   get walkBobOffset() {
-    if (!this.grounded || this.vx === 0) return 0;
-    return Math.floor(this.animTime / 0.12) % 2 === 0 ? 0 : -1;
+    if (!this.isWalking) return 0;
+    return this.walkFrame === 0 ? 0 : -1;
   }
 }
 

@@ -50,6 +50,46 @@ const PLAYER_IDLE_ROWS = [
   '.BBB.BBB..',
 ];
 
+// Ciclo de caminhada (2 quadros): a perna e o braço livre (lado oposto
+// à espada) alternam de posição a cada quadro para dar sensação de passo.
+const PLAYER_WALK_A_ROWS = [
+  '..HHHH....',
+  '.HHHHHH...',
+  '.HSSSSH...',
+  '.HSSSSH...',
+  '..HHHH....',
+  '.BBBBBBB..',
+  '.BBBBBBG..',
+  '.BDDDBBB..',
+  'BBDDDBBB..',
+  'SBBBBBBB..',
+  '..BB.BB...',
+  '..BB.BB...',
+  '..DD......',
+  '..DD......',
+  '.BBB......',
+  '.BBB......',
+];
+
+const PLAYER_WALK_B_ROWS = [
+  '..HHHH....',
+  '.HHHHHH...',
+  '.HSSSSH...',
+  '.HSSSSH...',
+  '..HHHH....',
+  '.BBBBBBB..',
+  'SBBBBBBG..',
+  'BBDDDBBB..',
+  '.BDDDBBB..',
+  '.BBBBBBB..',
+  '..BB.BB...',
+  '..BB.BB...',
+  '.....DD...',
+  '.....DD...',
+  '.....BBB..',
+  '.....BBB..',
+];
+
 const PLAYER_ATTACK_ROWS = [
   '..HHHH......',
   '.HHHHHH.....',
@@ -93,6 +133,8 @@ const ENEMY_IDLE_ROWS = [
 
 const SPRITES = {
   playerIdle: buildSprite(PLAYER_IDLE_ROWS, PLAYER_PALETTE),
+  playerWalkA: buildSprite(PLAYER_WALK_A_ROWS, PLAYER_PALETTE),
+  playerWalkB: buildSprite(PLAYER_WALK_B_ROWS, PLAYER_PALETTE),
   playerAttack: buildSprite(PLAYER_ATTACK_ROWS, PLAYER_PALETTE),
   enemyIdle: buildSprite(ENEMY_IDLE_ROWS, ENEMY_PALETTE),
 };

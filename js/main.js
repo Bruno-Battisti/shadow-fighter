@@ -237,8 +237,14 @@ function drawEnemy(enemy) {
   ctx.restore();
 }
 
+function playerSprite() {
+  if (player.attacking) return SPRITES.playerAttack;
+  if (player.isWalking) return player.walkFrame === 0 ? SPRITES.playerWalkA : SPRITES.playerWalkB;
+  return SPRITES.playerIdle;
+}
+
 function drawPlayer() {
-  const sprite = player.attacking ? SPRITES.playerAttack : SPRITES.playerIdle;
+  const sprite = playerSprite();
   const drawWidth = player.attacking ? player.width * 1.2 : player.width;
   const drawY = player.y + player.walkBobOffset;
   const drawX = player.facing > 0 ? player.x : player.x + player.width - drawWidth;
