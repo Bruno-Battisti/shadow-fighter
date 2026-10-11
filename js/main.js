@@ -9,6 +9,11 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
+// Garante que o canvas possa receber foco de teclado (alguns navegadores
+// não entregam keydown à janela se nenhum elemento focável foi clicado).
+canvas.tabIndex = 0;
+canvas.addEventListener('click', () => canvas.focus());
+
 const el = {
   hearts: document.getElementById('hearts'),
   levelLabel: document.getElementById('level-label'),
@@ -273,6 +278,7 @@ function tryStartFromMenu() {
   SFX.ensureCtx();
   SFX.select();
   startNewGame();
+  canvas.focus();
 }
 
 document.getElementById('btn-start').addEventListener('click', tryStartFromMenu);
