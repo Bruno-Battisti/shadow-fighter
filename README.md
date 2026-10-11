@@ -1,5 +1,7 @@
 # Shadow Fighter
 
+▶️ [Jogar online](https://bruno-battisti.github.io/shadow-fighter/)
+
 Jogo 2D de plataforma e combate, construído em HTML5 Canvas + JavaScript puro
 (sem dependências externas). Implementa o MVP descrito em
 [`planejamento_shadow_fighter.pdf`](./planejamento_shadow_fighter.pdf): 3 fases
