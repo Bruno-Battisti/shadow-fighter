@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Fighter</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrapper">
+    <canvas id="game" width="960" height="540"></canvas>
+
+    <div id="hud">
+      <div id="hearts"></div>
+      <div id="level-label">Fase 1</div>
+    </div>
+
+    <div id="overlay-menu" class="overlay">
+      <h1>SHADOW FIGHTER</h1>
+      <p class="subtitle">Atravesse as fases, derrote as sombras e alcance a saída.</p>
+      <div class="controls">
+        <div><span class="key">A</span><span class="key">D</span> Mover</div>
+        <div><span class="key">ESPAÇO</span> Pular</div>
+        <div><span class="key">J</span> Atacar</div>
+        <div><span class="key">ESC</span> Pausar</div>
+      </div>
+      <button id="btn-start" class="btn">Pressione ENTER ou clique para começar</button>
+    </div>
+
+    <div id="overlay-pause" class="overlay hidden">
+      <h1>PAUSADO</h1>
+      <button id="btn-resume" class="btn">Continuar (ESC)</button>
+    </div>
+
+    <div id="overlay-victory" class="overlay hidden">
+      <h1>VITÓRIA!</h1>
+      <p class="subtitle">Você derrotou as sombras e atravessou todas as fases.</p>
+      <button id="btn-restart-win" class="btn">Jogar novamente</button>
+    </div>
+
+    <div id="overlay-defeat" class="overlay hidden">
+      <h1>VOCÊ MORREU</h1>
+      <p class="subtitle">As sombras foram mais fortes desta vez.</p>
+      <button id="btn-restart-lose" class="btn">Tentar novamente</button>
+    </div>
+
+    <div id="level-banner" class="hidden"></div>
+  </div>
+
+  <script src="js/input.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
