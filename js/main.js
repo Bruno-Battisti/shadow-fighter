@@ -7,6 +7,7 @@ const FALL_LIMIT_Y = CANVAS_H + 80; // abaixo disso, o jogador caiu no buraco
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
 
 const el = {
   hearts: document.getElementById('hearts'),
@@ -82,6 +83,7 @@ function goToNextLevel() {
   if (currentLevelIndex >= LEVELS.length) {
     state = STATE.VICTORY;
     showOverlay(el.victory);
+    SFX.victory();
     return;
   }
   loadLevel(currentLevelIndex, keepHearts);
@@ -103,6 +105,7 @@ function update(dt) {
     if (Input.wasPressed('Escape')) {
       state = STATE.PAUSED;
       showOverlay(el.pause);
+      SFX.pause();
       return;
     }
 
@@ -144,8 +147,10 @@ function update(dt) {
     if (!player.alive) {
       state = STATE.DEFEAT;
       showOverlay(el.defeat);
+      SFX.defeat();
     } else if (exitZone && rectsOverlap(player.rect, exitZone)) {
       state = STATE.TRANSITION;
+      SFX.levelComplete();
       transitionTimer = 0.5;
     }
 
@@ -154,6 +159,7 @@ function update(dt) {
     if (Input.wasPressed('Escape')) {
       state = STATE.PLAYING;
       hideOverlay(el.pause);
+      SFX.select();
     }
   } else if (state === STATE.TRANSITION) {
     transitionTimer -= dt;
@@ -199,39 +205,45 @@ function drawExit() {
   ctx.fillRect(exitZone.x, exitZone.y, exitZone.w, exitZone.h);
 }
 
+function drawSpriteFacing(sprite, x, y, w, h, facingRight) {
+  if (facingRight) {
+    ctx.drawImage(sprite, x, y, w, h);
+  } else {
+    ctx.save();
+    ctx.translate(x + w, y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(sprite, 0, 0, w, h);
+    ctx.restore();
+  }
+}
+
 function drawEnemy(enemy) {
   if (enemy.isGone) return;
   ctx.save();
   if (!enemy.alive) {
-    const t = Math.max(0, enemy.deathTimer / 0.4);
-    ctx.globalAlpha = t;
+    ctx.globalAlpha = Math.max(0, enemy.deathTimer / 0.4);
   }
-  ctx.fillStyle = enemy.hitFlash > 0 ? '#ffb3b3' : '#c23b4f';
-  ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-  // "olhos" simples para dar direção
-  ctx.fillStyle = '#1a0d10';
-  const eyeX = enemy.vx >= 0 ? enemy.x + enemy.width - 10 : enemy.x + 4;
-  ctx.fillRect(eyeX, enemy.y + 10, 6, 6);
+  const bob = enemy.alive ? enemy.walkBobOffset : 0;
+  drawSpriteFacing(SPRITES.enemyIdle, enemy.x, enemy.y + bob, enemy.width, enemy.height, enemy.vx >= 0);
+  if (enemy.hitFlash > 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillRect(enemy.x, enemy.y + bob, enemy.width, enemy.height);
+  }
   ctx.restore();
 }
 
 function drawPlayer() {
+  const sprite = player.attacking ? SPRITES.playerAttack : SPRITES.playerIdle;
+  const drawWidth = player.attacking ? player.width * 1.2 : player.width;
+  const drawY = player.y + player.walkBobOffset;
+  const drawX = player.facing > 0 ? player.x : player.x + player.width - drawWidth;
+
   ctx.save();
   if (player.invincibleTimer > 0 && Math.floor(player.invincibleTimer * 20) % 2 === 0) {
     ctx.globalAlpha = 0.4;
   }
-  ctx.fillStyle = '#4e7cf6';
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-  ctx.fillStyle = '#1a2340';
-  const eyeX = player.facing > 0 ? player.x + player.width - 10 : player.x + 4;
-  ctx.fillRect(eyeX, player.y + 10, 6, 6);
+  drawSpriteFacing(sprite, drawX, drawY, drawWidth, player.height, player.facing > 0);
   ctx.restore();
-
-  const hitbox = player.attackHitbox;
-  if (hitbox) {
-    ctx.fillStyle = 'rgba(255, 230, 140, 0.85)';
-    ctx.fillRect(hitbox.x, hitbox.y, hitbox.w, hitbox.h);
-  }
 }
 
 function render() {
@@ -258,6 +270,8 @@ function loop(now) {
 
 function tryStartFromMenu() {
   if (state !== STATE.MENU) return;
+  SFX.ensureCtx();
+  SFX.select();
   startNewGame();
 }
 
@@ -266,9 +280,10 @@ document.getElementById('btn-resume').addEventListener('click', () => {
   if (state !== STATE.PAUSED) return;
   state = STATE.PLAYING;
   hideOverlay(el.pause);
+  SFX.select();
 });
-document.getElementById('btn-restart-win').addEventListener('click', startNewGame);
-document.getElementById('btn-restart-lose').addEventListener('click', startNewGame);
+document.getElementById('btn-restart-win').addEventListener('click', () => { SFX.select(); startNewGame(); });
+document.getElementById('btn-restart-lose').addEventListener('click', () => { SFX.select(); startNewGame(); });
 
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Enter' && state === STATE.MENU) {

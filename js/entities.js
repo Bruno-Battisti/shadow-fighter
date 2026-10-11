@@ -62,6 +62,8 @@ class Player {
     this.maxHearts = 3;
     this.invincibleTimer = 0;
     this.alive = true;
+
+    this.animTime = 0;
   }
 
   get rect() {
@@ -74,6 +76,7 @@ class Player {
     this.attackTimer = this.attackDuration;
     this.attackCooldown = 0.32;
     this.enemiesHitThisSwing.clear();
+    SFX.attack();
   }
 
   get attackHitbox() {
@@ -89,6 +92,7 @@ class Player {
     if (this.invincibleTimer > 0 || !this.alive) return;
     this.hearts -= 1;
     this.invincibleTimer = 1.1;
+    SFX.playerHurt();
     if (this.hearts <= 0) {
       this.hearts = 0;
       this.alive = false;
@@ -110,6 +114,7 @@ class Player {
     if ((Input.wasPressed('Space')) && this.grounded) {
       this.vy = JUMP_VELOCITY;
       this.grounded = false;
+      SFX.jump();
     }
 
     // Ataque.
@@ -130,6 +135,14 @@ class Player {
     }
     if (this.attackCooldown > 0) this.attackCooldown -= dt;
     if (this.invincibleTimer > 0) this.invincibleTimer -= dt;
+
+    if (this.grounded && moveX !== 0) this.animTime += dt;
+  }
+
+  // Pequeno balanço vertical (1px) para dar a sensação de passos ao andar.
+  get walkBobOffset() {
+    if (!this.grounded || this.vx === 0) return 0;
+    return Math.floor(this.animTime / 0.12) % 2 === 0 ? 0 : -1;
   }
 }
 
@@ -147,6 +160,7 @@ class Enemy {
     this.alive = true;
     this.deathTimer = 0;
     this.hitFlash = 0;
+    this.animTime = 0;
   }
 
   get rect() {
@@ -157,9 +171,11 @@ class Enemy {
     if (!this.alive) return;
     this.hp -= 1;
     this.hitFlash = 0.15;
+    SFX.hitEnemy();
     if (this.hp <= 0) {
       this.alive = false;
       this.deathTimer = 0.4;
+      SFX.enemyDeath();
     }
   }
 
@@ -179,6 +195,11 @@ class Enemy {
     }
 
     if (this.hitFlash > 0) this.hitFlash -= dt;
+    this.animTime += dt;
+  }
+
+  get walkBobOffset() {
+    return Math.floor(this.animTime / 0.15) % 2 === 0 ? 0 : -1;
   }
 
   get isGone() {
